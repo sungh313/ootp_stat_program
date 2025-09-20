@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>트레이딩 블록 현황</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+    <style>
+        body { 
+            font-family: 'Malgun Gothic', sans-serif; 
+            padding: 20px; 
+            width: 1800px; /* 페이지 전체 폭을 1800px로 확장 */
+            margin: auto; 
+        }
+        .header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 20px; 
+        }
+        .team-performance { 
+            border: 1px solid #ccc; 
+            padding: 10px; 
+            border-radius: 5px; 
+        }
+        .search-area { text-align: center; }
+        .player-list-container { 
+            border: 1px solid #000; 
+            height: 600px; 
+            overflow-y: auto; 
+        }
+        table.dataTable thead th { 
+            position: sticky; 
+            top: 0; 
+            background-color: #f2f2f2; 
+            z-index: 1; 
+        }
+        th, td { 
+            border: 1px solid #ccc; 
+            padding: 4px; /* 칸 내부 여백을 4px로 축소 */
+            text-align: center; 
+            font-size: 12px; /* 폰트 크기를 약간 줄여 공간 확보 */
+            white-space: nowrap; 
+        }
+        table.dataTable thead .sorting,
+        table.dataTable thead .sorting_asc,
+        table.dataTable thead .sorting_desc {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <button onclick="location.href='/'">메인화면으로 돌아가기</button>
+        <h2>트레이딩 블록</h2>
+        <div></div> <!-- 오른쪽 공간을 위한 빈 요소 -->
+    </div>
+
+    <div class="player-list-container">
+        <table id="trade_block_table" class="display" style="width:100%">
+            <thead>
+                <tr>
+                    <th>순번</th> <th>이름</th> <th>포지션</th> <th>팀</th> <th>나이</th> <th>투/타</th>
+                    <th>성실도</th> <th>지능</th> <th>리더십</th> <th>충성심</th> <th>우승열망</th> <th>욕심</th>
+                    <th>부상여부</th> <th>부상 가능성</th> <th>경기감각 저하</th> <th>종합 사기</th> <th>역할 만족도</th> <th>기대치</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if players %}
+                    {% for player in players %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ player.name }}</td>
+                        <td>{{ player.position_name }}</td>
+                        <td>{{ player.team_name }}</td>
+                        <td>{{ player.age }}세</td>
+                        <td>{{ player.throws }}/{{ player.bat }}</td>
+                        <td>{{ player.personality_work_ethic }}</td>
+                        <td>{{ player.personality_intelligence }}</td>
+                        <td>{{ player.personality_leader }}</td>
+                        <td>{{ player.personality_loyalty }}</td>
+                        <td>{{ player.personality_play_for_winner }}</td>
+                        <td>{{ player.personality_greed }}</td>
+                        <td>
+                            {% if player.injury_is_injured == 1 %}
+                                <span style="color: red;">부상중 ({{ player.injury_left }}일)</span>
+                            {% else %}
+                                <span style="color: green;">건강</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ player.prone_overall }}</td>
+                        <td>{{ player.rust }}</td>
+                        <td>{{ player.morale }}</td>
+                        <td>{{ player.morale_player_role }}</td>
+                        <td>{{ player.expectation }}</td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="18">트레이딩 블록에 등록된 선수가 없습니다.</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script>
+    $(document).ready(function () {
+        $('#trade_block_table').DataTable({
+            "paging": false,
+            "info": false,
+            "searching": false,
+            "order": [[3, "asc"]] // 팀 이름 기준으로 초기 정렬
+        });
+    });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ player.full_name }} 선수 정보</title>
+    <style>
+        body { font-family: 'Malgun Gothic', sans-serif; padding: 20px; max-width: 600px; margin: auto; }
+        h2 { text-align: center; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; width: 120px; }
+    </style>
+</head>
+<body>
+    <h2>{{ player.full_name }}</h2>
+    <table>
+        <tr><th>소속팀</th><td>{{ player.team_name }}</td></tr>
+        <tr><th>포지션</th><td>{{ player.position_name }}</td></tr>
+        <tr><th>나이</th><td>{{ player.age }}세</td></tr>
+        <tr><th>투/타</th><td>{{ '우투' if player.throws == 1 else '좌투' }}/{{ '우타' if player.bats == 1 else '좌타' if player.bats == 2 else '양타' }}</td></tr>
+        <tr><th>등번호</th><td>{{ player.uniform_number }}</td></tr>
+        <tr><td colspan="2" style="background-color:#eee; text-align:center;"><b>선수 성향</b></td></tr>
+        <tr><th>성실도</th><td>{{ player.personality_work_ethic }}</td></tr>
+        <tr><th>지능</th><td>{{ player.personality_intelligence }}</td></tr>
+        <tr><th>리더십</th><td>{{ player.personality_leader }}</td></tr>
+        <tr><th>충성심</th><td>{{ player.personality_loyalty }}</td></tr>
+        <tr><th>우승열망</th><td>{{ player.personality_play_for_winner }}</td></tr>
+        <tr><th>욕심</th><td>{{ player.personality_greed }}</td></tr>
+        <tr><td colspan="2" style="background-color:#eee; text-align:center;"><b>상태</b></td></tr>
+        <tr><th>부상</th>
+            <td>
+                {% if player.injury_is_injured == 1 %}
+                    <span style="color: red;">부상중 ({{ player.injury_left }}일 남음)</span>
+                {% else %}
+                    <span style="color: green;">건강</span>
+                {% endif %}
+            </td>
+        </tr>
+        <tr><th>부상 가능성</th><td>{{ player.prone_overall }}</td></tr>
+        <tr><th>경기감각 저하</th><td>{{ player.rust }}</td></tr>
+        <tr><th>종합 사기</th><td>{{ player.morale }}</td></tr>
+        <tr><th>역할 만족도</th><td>{{ player.morale_player_role }}</td></tr>
+        <tr><th>기대치</th><td>{{ player.expectation }}</td></tr>
+    </table>
+</body>
+</html>
