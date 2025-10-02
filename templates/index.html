@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <title>OOTP 선수단 조회</title>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+    <!-- [수정] 스타일 변경 -->
     <style>
         body { font-family: 'Malgun Gothic', sans-serif; padding: 20px; width: 1800px; margin: auto; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .team-performance { border: 1px solid #ccc; padding: 10px; border-radius: 5px; }
         .search-area { text-align: center; }
-        .player-list-container { border: 1px solid #000; height: 600px; overflow-y: auto; }
-        table.dataTable thead th { position: sticky; top: 0; background-color: #f2f2f2; z-index: 1; }
+        /* [삭제] .player-list-container 관련 스타일 제거 */
         th, td { border: 1px solid #ccc; padding: 4px; text-align: center; font-size: 12px; white-space: nowrap; }
         table.dataTable thead .sorting, table.dataTable thead .sorting_asc, table.dataTable thead .sorting_desc { cursor: pointer; }
     </style>
@@ -34,65 +34,63 @@
 
     <h3 style="text-align: center;">한화이글스 선수단</h3>
 
-    <div class="player-list-container">
-        <table id="players_table" class="display" style="width:100%">
-            <thead>
+    <!-- [수정] 테이블을 감싸던 div 제거 -->
+    <table id="players_table" class="display" style="width:100%">
+        <thead>
+            <tr>
+                <th>순번</th> <th>이름</th> <th>포지션</th> <th>팀</th> <th>나이</th> <th>투/타</th>
+                <th>성실도</th> <th>지능</th> <th>성실+지능</th>
+                <th>리더십</th> <th>충성심</th> <th>우승열망</th> <th>욕심</th>
+                <th>부상여부</th> <th>부상 가능성</th> <th>경기감각 저하</th> <th>종합 사기</th> <th>역할 만족도</th> <th>기대치</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if players %}
+                {% for player in players %}
                 <tr>
-                    <th>순번</th> <th>이름</th> <th>포지션</th> <th>팀</th> <th>나이</th> <th>투/타</th>
-                    <th>성실도</th> <th>지능</th>
-                    <!-- [추가] 성실+지능 헤더 -->
-                    <th>성실+지능</th>
-                    <th>리더십</th> <th>충성심</th> <th>우승열망</th> <th>욕심</th>
-                    <th>부상여부</th> <th>부상 가능성</th> <th>경기감각 저하</th> <th>종합 사기</th> <th>역할 만족도</th> <th>기대치</th>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ player.name }}</td>
+                    <td>{{ player.position_name }}</td>
+                    <td>{{ player.team_name }}</td>
+                    <td>{{ player.age }}세</td>
+                    <td>{{ player.throws }}/{{ player.bat }}</td>
+                    <td>{{ player.personality_work_ethic }}</td>
+                    <td>{{ player.personality_intelligence }}</td>
+                    <td>{{ player.work_intel_sum }}</td>
+                    <td>{{ player.personality_leader }}</td>
+                    <td>{{ player.personality_loyalty }}</td>
+                    <td>{{ player.personality_play_for_winner }}</td>
+                    <td>{{ player.personality_greed }}</td>
+                    <td>
+                        {% if player.injury_is_injured == 1 %}
+                            <span style="color: red; display:none;">1</span>부상중 ({{ player.injury_left }}일)
+                        {% else %}
+                            <span style="color: green; display:none;">0</span>건강
+                        {% endif %}
+                    </td>
+                    <td>{{ player.prone_overall }}</td>
+                    <td>{{ player.rust }}</td>
+                    <td>{{ player.morale }}</td>
+                    <td>{{ player.morale_player_role }}</td>
+                    <td>{{ player.expectation }}</td>
                 </tr>
-            </thead>
-            <tbody>
-                {% if players %}
-                    {% for player in players %}
-                    <tr>
-                        <td>{{ loop.index }}</td>
-                        <td>{{ player.name }}</td>
-                        <td>{{ player.position_name }}</td>
-                        <td>{{ player.team_name }}</td>
-                        <td>{{ player.age }}세</td>
-                        <td>{{ player.throws }}/{{ player.bat }}</td>
-                        <td>{{ player.personality_work_ethic }}</td>
-                        <td>{{ player.personality_intelligence }}</td>
-                        <!-- [추가] 성실+지능 값 -->
-                        <td>{{ player.work_intel_sum }}</td>
-                        <td>{{ player.personality_leader }}</td>
-                        <td>{{ player.personality_loyalty }}</td>
-                        <td>{{ player.personality_play_for_winner }}</td>
-                        <td>{{ player.personality_greed }}</td>
-                        <td>
-                            {% if player.injury_is_injured == 1 %}
-                                <span style="color: red; display:none;">1</span>부상중 ({{ player.injury_left }}일)
-                            {% else %}
-                                <span style="color: green; display:none;">0</span>건강
-                            {% endif %}
-                        </td>
-                        <td>{{ player.prone_overall }}</td>
-                        <td>{{ player.rust }}</td>
-                        <td>{{ player.morale }}</td>
-                        <td>{{ player.morale_player_role }}</td>
-                        <td>{{ player.expectation }}</td>
-                    </tr>
-                    {% endfor %}
-                {% else %}
-                    <!-- [수정] colspan을 19로 변경 -->
-                    <tr>
-                        <td colspan="19">선수 데이터가 없습니다. DB 연결 정보를 확인하거나 데이터가 비어있는지 확인해주세요.</td>
-                    </tr>
-                {% endif %}
-            </tbody>
-        </table>
-    </div>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="19">선수 데이터가 없습니다.</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
 
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <!-- [수정] DataTables 초기화 스크립트 변경 -->
     <script>
     $(document).ready(function () {
         $('#players_table').DataTable({
+            "scrollY": "600px",        // 테이블의 세로 스크롤 높이를 600px로 지정
+            "scrollCollapse": true, // 내용이 적을 때 테이블 높이를 줄임
             "paging": false,
             "info": false,
             "searching": false,
