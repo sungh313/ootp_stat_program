@@ -29,6 +29,7 @@ def get_player_data():
     if connection is None: return []
     try:
         with connection.cursor() as cursor:
+            # [수정] 성실도와 지능을 합산하는 컬럼(work_intel_sum) 추가
             sql = """
             SELECT 
                 a.player_id, b.name AS team_name,
@@ -37,8 +38,20 @@ def get_player_data():
                 a.age,
                 CASE a.bats WHEN 1 THEN '우타' WHEN 2 THEN '좌타' WHEN 3 THEN '양타' ELSE '기타' END AS bat,
                 CASE a.throws WHEN 1 THEN '우투' WHEN 2 THEN '좌투' WHEN 3 THEN '양투' ELSE '기타' END AS throws,
-                a.personality_work_ethic, a.personality_intelligence, a.personality_leader, a.personality_loyalty, a.personality_play_for_winner, a.personality_greed,
-                a.injury_is_injured, a.injury_left, a.prone_overall, a.rust, a.morale, a.morale_player_role, a.expectation
+                a.personality_work_ethic,
+                a.personality_intelligence,
+                (a.personality_work_ethic + a.personality_intelligence) AS work_intel_sum,
+                a.personality_leader,
+                a.personality_loyalty,
+                a.personality_play_for_winner,
+                a.personality_greed,
+                a.injury_is_injured,
+                a.injury_left,
+                a.prone_overall,
+                a.rust,
+                a.morale,
+                a.morale_player_role,
+                a.expectation
             FROM players a, teams b
             WHERE a.team_id IN (2, 16) AND a.team_id = b.team_id
             ORDER BY a.team_id, a.position;

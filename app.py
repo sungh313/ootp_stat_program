@@ -9,7 +9,7 @@ import os
 # --------------------------------------------------------------------------
 # 전역 변수 및 헬퍼 함수
 # --------------------------------------------------------------------------
-
+# streamlit run app.py 로 실행
 # 선수 분석 웹서버 프로세스를 저장할 변수
 if 'analysis_process' not in st.session_state:
     st.session_state.analysis_process = None

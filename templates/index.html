@@ -39,7 +39,10 @@
             <thead>
                 <tr>
                     <th>순번</th> <th>이름</th> <th>포지션</th> <th>팀</th> <th>나이</th> <th>투/타</th>
-                    <th>성실도</th> <th>지능</th> <th>리더십</th> <th>충성심</th> <th>우승열망</th> <th>욕심</th>
+                    <th>성실도</th> <th>지능</th>
+                    <!-- [추가] 성실+지능 헤더 -->
+                    <th>성실+지능</th>
+                    <th>리더십</th> <th>충성심</th> <th>우승열망</th> <th>욕심</th>
                     <th>부상여부</th> <th>부상 가능성</th> <th>경기감각 저하</th> <th>종합 사기</th> <th>역할 만족도</th> <th>기대치</th>
                 </tr>
             </thead>
@@ -55,6 +58,8 @@
                         <td>{{ player.throws }}/{{ player.bat }}</td>
                         <td>{{ player.personality_work_ethic }}</td>
                         <td>{{ player.personality_intelligence }}</td>
+                        <!-- [추가] 성실+지능 값 -->
+                        <td>{{ player.work_intel_sum }}</td>
                         <td>{{ player.personality_leader }}</td>
                         <td>{{ player.personality_loyalty }}</td>
                         <td>{{ player.personality_play_for_winner }}</td>
@@ -74,8 +79,9 @@
                     </tr>
                     {% endfor %}
                 {% else %}
+                    <!-- [수정] colspan을 19로 변경 -->
                     <tr>
-                        <td colspan="18">선수 데이터가 없습니다. DB 연결 정보를 확인하거나 데이터가 비어있는지 확인해주세요.</td>
+                        <td colspan="19">선수 데이터가 없습니다. DB 연결 정보를 확인하거나 데이터가 비어있는지 확인해주세요.</td>
                     </tr>
                 {% endif %}
             </tbody>
