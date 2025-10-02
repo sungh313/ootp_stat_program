@@ -4,13 +4,11 @@
     <meta charset="UTF-8">
     <title>OOTP 선수단 조회</title>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
-    <!-- [수정] 스타일 변경 -->
     <style>
         body { font-family: 'Malgun Gothic', sans-serif; padding: 20px; width: 1800px; margin: auto; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .team-performance { border: 1px solid #ccc; padding: 10px; border-radius: 5px; }
         .search-area { text-align: center; }
-        /* [삭제] .player-list-container 관련 스타일 제거 */
         th, td { border: 1px solid #ccc; padding: 4px; text-align: center; font-size: 12px; white-space: nowrap; }
         table.dataTable thead .sorting, table.dataTable thead .sorting_asc, table.dataTable thead .sorting_desc { cursor: pointer; }
     </style>
@@ -25,7 +23,11 @@
         </div>
         <div class="search-area">
             <strong>선수 조회하기</strong>
-            <input type="text" id="playerSearchInput" placeholder="선수이름 입력창" size="30">
+            <!-- [수정] 검색을 form으로 감싸서 더 명확하게 처리 -->
+            <form id="searchForm" action="/search" method="get" target="_blank" style="display: inline;">
+                <input type="text" name="name" id="playerSearchInput" placeholder="선수이름 입력창" size="30">
+                <button type="submit">검색</button>
+            </form>
         </div>
         <div>
             <button onclick="location.href='/trade_block'">트레이딩 블록 확인</button>
@@ -34,7 +36,6 @@
 
     <h3 style="text-align: center;">한화이글스 선수단</h3>
 
-    <!-- [수정] 테이블을 감싸던 div 제거 -->
     <table id="players_table" class="display" style="width:100%">
         <thead>
             <tr>
@@ -85,24 +86,33 @@
 
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
     <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-    <!-- [수정] DataTables 초기화 스크립트 변경 -->
+    
+    <!-- [수정] DataTables 및 검색 로직 스크립트 -->
     <script>
     $(document).ready(function () {
         $('#players_table').DataTable({
-            "scrollY": "600px",        // 테이블의 세로 스크롤 높이를 600px로 지정
-            "scrollCollapse": true, // 내용이 적을 때 테이블 높이를 줄임
+            "scrollY": "600px",
+            "scrollCollapse": true,
             "paging": false,
             "info": false,
-            "searching": false,
+            "searching": false, // DataTables 자체 검색 기능은 비활성화
             "order": [[0, "asc"]]
         });
 
+        // Enter 키로 검색 제출 (기존 로직 개선)
         $('#playerSearchInput').on('keypress', function(e) {
-            if (e.which === 13) {
-                let playerName = $(this).val().trim();
-                if (playerName) {
-                    window.open('/player/' + encodeURIComponent(playerName), '_blank');
-                }
+            if (e.which === 13) { // 엔터 키
+                e.preventDefault(); // form의 기본 제출 동작 방지
+                $('#searchForm').submit(); // form을 프로그래밍 방식으로 제출
+            }
+        });
+        
+        // Form 제출 시 빈 값인지 확인
+        $('#searchForm').on('submit', function(e) {
+            let playerName = $('#playerSearchInput').val().trim();
+            if (!playerName) {
+                alert("선수 이름을 입력해주세요.");
+                e.preventDefault(); // 이름이 비어있으면 제출 막기
             }
         });
     });

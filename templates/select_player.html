@@ -1,0 +1,40 @@
+<!-- 파일명: templates/select_player.html -->
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>선수 선택</title>
+    <!-- 간단한 스타일 -->
+    <style>
+        body { font-family: sans-serif; margin: 2em; }
+        h1, h2 { color: #333; }
+        ul { list-style-type: none; padding: 0; }
+        li { margin: 10px 0; }
+        a { text-decoration: none; color: #007bff; font-weight: bold; }
+        a:hover { text-decoration: underline; }
+        .player-info { color: #555; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <h1>'{{ search_name }}' 검색 결과</h1>
+    <h2>동명이인이 여러 명 검색되었습니다. 한 명을 선택해주세요.</h2>
+
+    <ul>
+        {% for player in players %}
+        <li>
+            <!-- 클릭하면 고유 ID로 선수 정보 페이지에 접속하는 링크 -->
+            <a href="/player/id/{{ player.player_id }}" target="_blank">
+                {{ player.full_name }}
+            </a>
+            <span class="player-info">
+                (팀: {{ player.team_name }}, 포지션: {{ player.position_name }}, 나이: {{ player.age }})
+            </span>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <br>
+    <a href="/">메인으로 돌아가기</a>
+</body>
+</html>
