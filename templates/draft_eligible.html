@@ -1,8 +1,10 @@
+<!-- 파일명: templates/draft_eligible.html (수정본) -->
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>OOTP 선수단 조회</title>
+    <title>신인 드래프트 대상 선수 목록</title>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
     <style>
         body { font-family: 'Malgun Gothic', sans-serif; padding: 20px; width: 1800px; margin: auto; }
@@ -15,27 +17,7 @@
 </head>
 <body>
 
-    <div class="header">
-        <div class="team-performance">
-            <strong>성적</strong><br>
-            이번 시즌 : 00승 0패 0무<br>
-            이번달 : 00승 0패 0무
-        </div>
-        <div class="search-area">
-            <strong>선수 조회하기</strong>
-            <form id="searchForm" action="/search" method="get" target="_blank" style="display: inline;">
-                <input type="text" name="name" id="playerSearchInput" placeholder="선수이름 입력창" size="30">
-                <button type="submit">검색</button>
-            </form>
-        </div>
-        <div>
-            <button onclick="location.href='/trade_block'">트레이딩 블록 확인</button>
-            <!-- "신인 드래프트 대상" 버튼 추가 -->
-            <button onclick="location.href='/draft_eligible'">신인 드래프트 대상</button> 
-        </div>
-    </div>
-
-    <h3 style="text-align: center;">한화이글스 선수단</h3>
+    <h3 style="text-align: center;">신인 드래프트 대상 선수 목록</h3>
 
     <table id="players_table" class="display" style="width:100%">
         <thead>
@@ -78,8 +60,12 @@
                 </tr>
                 {% endfor %}
             {% else %}
+                <!-- [수정] colspan을 사용하지 않고 19개의 빈 셀을 생성 -->
                 <tr>
-                    <td colspan="19">선수 데이터가 없습니다.</td>
+                    <td>신인 드래프트 대상 선수가 없습니다.</td>
+                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+                    <td></td><td></td>
                 </tr>
             {% endif %}
         </tbody>
@@ -95,23 +81,8 @@
             "scrollCollapse": true,
             "paging": false,
             "info": false,
-            "searching": false, 
+            "searching": false,
             "order": [[0, "asc"]]
-        });
-
-        $('#playerSearchInput').on('keypress', function(e) {
-            if (e.which === 13) { 
-                e.preventDefault(); 
-                $('#searchForm').submit();
-            }
-        });
-        
-        $('#searchForm').on('submit', function(e) {
-            let playerName = $('#playerSearchInput').val().trim();
-            if (!playerName) {
-                alert("선수 이름을 입력해주세요.");
-                e.preventDefault(); 
-            }
         });
     });
     </script>
