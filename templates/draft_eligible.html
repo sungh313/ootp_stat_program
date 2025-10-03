@@ -35,7 +35,7 @@
                     <td>{{ loop.index }}</td>
                     <td>{{ player.name }}</td>
                     <td>{{ player.position_name }}</td>
-                    <td>{{ player.team_name }}</td>
+                    <td>{{ player.team_name if player.team_name else 'FA' }}</td>
                     <td>{{ player.age }}세</td>
                     <td>{{ player.throws }}/{{ player.bat }}</td>
                     <td>{{ player.personality_work_ethic }}</td>
@@ -52,7 +52,10 @@
                             <span style="color: green; display:none;">0</span>건강
                         {% endif %}
                     </td>
-                    <td>{{ player.prone_overall }}</td>
+                    <!-- [수정] 부상 가능성 수치에 따라 색상 변경 -->
+                    <td style="{% if player.prone_overall > 90 %}color: red;{% elif player.prone_overall > 75 %}color: orange;{% endif %}">
+                        {{ player.prone_overall }}
+                    </td>
                     <td>{{ player.rust }}</td>
                     <td>{{ player.morale }}</td>
                     <td>{{ player.morale_player_role }}</td>
@@ -60,12 +63,8 @@
                 </tr>
                 {% endfor %}
             {% else %}
-                <!-- [수정] colspan을 사용하지 않고 19개의 빈 셀을 생성 -->
                 <tr>
-                    <td>신인 드래프트 대상 선수가 없습니다.</td>
-                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                    <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                    <td></td><td></td>
+                    <td colspan="19">신인 드래프트 대상 선수가 없습니다.</td>
                 </tr>
             {% endif %}
         </tbody>

@@ -115,8 +115,60 @@ def get_draft_eligible_players():
 
 @app.route('/')
 def show_players():
-    players = get_player_data()
-    return render_template('index.html', players=players)
+    connection = get_db_connection()
+    if connection is None:
+        return "데이터베이스 연결에 실패했습니다.", 500
+
+    try:
+        with connection.cursor() as cursor:
+            # 한화 선수단 조회 (team_id = 2 가정)
+            sql_hanwha = """
+            SELECT 
+                a.player_id, b.name AS team_name,
+                CASE a.position WHEN 1 THEN '투수' WHEN 2 THEN '포수' WHEN 3 THEN '1루수' WHEN 4 THEN '2루수' WHEN 5 THEN '3루수' WHEN 6 THEN '유격수' WHEN 7 THEN '좌익수' WHEN 8 THEN '중견수' WHEN 9 THEN '우익수' WHEN 10 THEN '지명타자' ELSE '기타' END AS position_name,
+                CASE WHEN a.nation_id = '177' THEN CONCAT(a.last_name, a.first_name) ELSE CONCAT(a.first_name, ' ', a.last_name) END AS name,
+                a.age,
+                CASE a.bats WHEN 1 THEN '우타' WHEN 2 THEN '좌타' WHEN 3 THEN '양타' ELSE '기타' END AS bat,
+                CASE a.throws WHEN 1 THEN '우투' WHEN 2 THEN '좌투' WHEN 3 THEN '양투' ELSE '기타' END AS throws,
+                a.personality_work_ethic, a.personality_intelligence,
+                (a.personality_work_ethic + a.personality_intelligence) AS work_intel_sum,
+                a.personality_leader, a.personality_loyalty, a.personality_play_for_winner, a.personality_greed,
+                a.injury_is_injured, a.injury_left, a.prone_overall, a.rust, a.morale, a.morale_player_role, a.expectation
+            FROM players a JOIN teams b ON a.team_id = b.team_id
+            WHERE a.team_id = 2 
+            ORDER BY a.position;
+            """
+            cursor.execute(sql_hanwha)
+            hanwha_players = cursor.fetchall()
+
+            # 서산 선수단 조회 (team_id = 16 가정)
+            sql_seosan = """
+            SELECT 
+                a.player_id, b.name AS team_name,
+                CASE a.position WHEN 1 THEN '투수' WHEN 2 THEN '포수' WHEN 3 THEN '1루수' WHEN 4 THEN '2루수' WHEN 5 THEN '3루수' WHEN 6 THEN '유격수' WHEN 7 THEN '좌익수' WHEN 8 THEN '중견수' WHEN 9 THEN '우익수' WHEN 10 THEN '지명타자' ELSE '기타' END AS position_name,
+                CASE WHEN a.nation_id = '177' THEN CONCAT(a.last_name, a.first_name) ELSE CONCAT(a.first_name, ' ', a.last_name) END AS name,
+                a.age,
+                CASE a.bats WHEN 1 THEN '우타' WHEN 2 THEN '좌타' WHEN 3 THEN '양타' ELSE '기타' END AS bat,
+                CASE a.throws WHEN 1 THEN '우투' WHEN 2 THEN '좌투' WHEN 3 THEN '양투' ELSE '기타' END AS throws,
+                a.personality_work_ethic, a.personality_intelligence,
+                (a.personality_work_ethic + a.personality_intelligence) AS work_intel_sum,
+                a.personality_leader, a.personality_loyalty, a.personality_play_for_winner, a.personality_greed,
+                a.injury_is_injured, a.injury_left, a.prone_overall, a.rust, a.morale, a.morale_player_role, a.expectation
+            FROM players a JOIN teams b ON a.team_id = b.team_id
+            WHERE a.team_id = 16
+            ORDER BY a.position;
+            """
+            cursor.execute(sql_seosan)
+            seosan_players = cursor.fetchall()
+
+    except Exception as e:
+        print(f"선수 데이터 조회 중 오류 발생: {e}")
+        hanwha_players, seosan_players = [], []
+    finally:
+        if connection:
+            connection.close()
+
+    return render_template('index.html', hanwha_players=hanwha_players, seosan_players=seosan_players)
 
 @app.route('/trade_block')
 def show_trade_block():
