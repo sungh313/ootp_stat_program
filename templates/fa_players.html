@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>FA 선수 목록</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+    <style>
+        body { font-family: 'Malgun Gothic', sans-serif; padding: 20px; width: 95%; max-width: 1800px; margin: auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        th, td { border: 1px solid #ccc; padding: 4px; text-align: center; font-size: 12px; white-space: nowrap; }
+        table.dataTable thead .sorting, table.dataTable thead .sorting_asc, table.dataTable thead .sorting_desc { cursor: pointer; }
+        
+        /* 버튼 스타일 (index.html과 통일) */
+        .custom-btn {
+            display: inline-block; padding: 10px 20px; font-size: 14px; font-weight: bold;
+            text-align: center; text-decoration: none; color: white; border-radius: 5px;
+            border: none; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            background-color: #7f8c8d; /* 회색 (메인으로) */
+        }
+        .custom-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.3); background-color: #95a5a6; }
+
+        /* 선수 이름 링크 스타일 */
+        .player-link { text-decoration: none; color: #2980b9; font-weight: bold; }
+        .player-link:hover { text-decoration: underline; color: #1c5980; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <a href="/" class="custom-btn">🏠 메인화면으로 돌아가기</a>
+        <h2>💰 FA (자유계약) 선수 목록</h2>
+        <div style="width: 100px;"></div> <!-- 균형을 위한 빈 공간 -->
+    </div>
+
+    <table id="fa_players_table" class="display" style="width:100%">
+        <thead>
+            <tr>
+                <th>순번</th> <th>이름</th> <th>포지션</th> <th>나이</th> <th>투/타</th>
+                <th>성실도</th> <th>지능</th> <th>성실+지능</th>
+                <th>리더십</th> <th>충성심</th> <th>우승열망</th> <th>욕심</th>
+                <th>부상여부</th> <th>부상 가능성</th> <th>경기감각 저하</th> <th>종합 사기</th> <th>역할 만족도</th> <th>기대치</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if players %}
+                {% for player in players %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td><a href="/player/id/{{ player.player_id }}" class="player-link" target="_blank">{{ player.name }}</a></td>
+                    <td>{{ player.position_name }}</td>
+                    <td>{{ player.age }}세</td>
+                    <td>{{ player.throws }}/{{ player.bat }}</td>
+                    <td>{{ player.personality_work_ethic }}</td>
+                    <td>{{ player.personality_intelligence }}</td>
+                    <td>{{ player.work_intel_sum }}</td>
+                    <td>{{ player.personality_leader }}</td>
+                    <td>{{ player.personality_loyalty }}</td>
+                    <td>{{ player.personality_play_for_winner }}</td>
+                    <td>{{ player.personality_greed }}</td>
+                    <td data-order="{{ 1 if player.injury_is_injured == 1 else 0 }}">
+                        {% if player.injury_is_injured == 1 %}
+                            <span style="color: red;">부상중 ({{ player.injury_left }}일)</span>
+                        {% else %}
+                            <span style="color: green;">건강</span>
+                        {% endif %}
+                    </td>
+                    <td style="{% if player.prone_overall > 90 %}color: red;{% elif player.prone_overall > 75 %}color: orange;{% endif %}">
+                        {{ player.prone_overall }}
+                    </td>
+                    <td>{{ player.rust }}</td>
+                    <td>{{ player.morale }}</td>
+                    <td>{{ player.morale_player_role }}</td>
+                    <td>{{ player.expectation }}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="18">조회된 FA 선수가 없습니다.</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    
+    <script>
+    $(document).ready(function () {
+        $('#fa_players_table').DataTable({
+            "scrollY": "600px",
+            "scrollCollapse": true,
+            "paging": false,
+            "info": false,
+            "searching": true, // FA는 선수가 많을 수 있으므로 검색 기능 활성화
+            "order": [[2, "asc"]] // 포지션 순 정렬
+        });
+    });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>선수 선택 (비교)</title>
+    <style>
+        body { font-family: 'Malgun Gothic', sans-serif; margin: 2em; background-color: #f0f2f5; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; text-align: center; }
+        h2 { color: #7f8c8d; font-size: 16px; text-align: center; margin-bottom: 30px; }
+        ul { list-style-type: none; padding: 0; }
+        li { margin: 10px 0; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        a { text-decoration: none; color: #2980b9; font-weight: bold; font-size: 18px; }
+        a:hover { text-decoration: underline; color: #1c5980; }
+        .player-info { color: #555; font-size: 14px; margin-left: 10px; }
+        .back-btn { display: block; width: 100px; margin: 20px auto; padding: 10px; background: #95a5a6; color: white; text-align: center; border-radius: 5px; text-decoration: none; }
+        .back-btn:hover { background: #7f8c8d; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>'{{ search_name }}' 검색 결과</h1>
+        <h2>여러 명의 선수가 검색되었습니다. 비교할 선수를 선택해주세요.</h2>
+
+        <ul>
+            {% for player in players %}
+            <li>
+                <!-- target이 p1이면 p1 자리에 선택한 ID를 넣고, p2는 기존 other_id 유지 -->
+                {% if target == 'p1' %}
+                    <a href="/compare?p1={{ player.player_id }}&p2={{ other_id if other_id else '' }}">
+                {% else %}
+                    <a href="/compare?p1={{ other_id if other_id else '' }}&p2={{ player.player_id }}">
+                {% endif %}
+                    {{ player.full_name }}
+                </a>
+                <span class="player-info">
+                    (팀: {{ player.team_name }}, 포지션: {{ player.position_name }}, 나이: {{ player.age }}세)
+                </span>
+            </li>
+            {% endfor %}
+        </ul>
+
+        <a href="/compare?p1={{ other_id if target == 'p2' and other_id else '' }}&p2={{ other_id if target == 'p1' and other_id else '' }}" class="back-btn">돌아가기</a>
+    </div>
+</body>
+</html>

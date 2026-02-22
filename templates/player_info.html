@@ -4,43 +4,131 @@
     <meta charset="UTF-8">
     <title>{{ player.full_name }} 선수 정보</title>
     <style>
-        body { font-family: 'Malgun Gothic', sans-serif; padding: 20px; max-width: 600px; margin: auto; }
-        h2 { text-align: center; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; width: 120px; }
+        body { font-family: 'Malgun Gothic', sans-serif; background-color: #f0f2f5; padding: 40px; margin: 0; }
+        .card {
+            background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-width: 700px; margin: auto; overflow: hidden;
+        }
+        .card-header {
+            background: linear-gradient(135deg, #2c3e50, #4ca1af); color: white;
+            padding: 30px; text-align: center; position: relative;
+        }
+        .card-header h1 { margin: 0; font-size: 28px; }
+        .card-header p { margin: 10px 0 0; font-size: 16px; opacity: 0.9; }
+        
+        .card-body { padding: 30px; }
+        
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th, td { padding: 12px 15px; border-bottom: 1px solid #eee; }
+        th { text-align: left; color: #555; width: 140px; font-weight: 600; background-color: #fafafa; }
+        td { color: #333; }
+        
+        .section-title {
+            font-size: 18px; font-weight: bold; color: #2c3e50;
+            margin-top: 20px; margin-bottom: 10px; border-left: 5px solid #3498db; padding-left: 10px;
+        }
+
+        .status-injured { color: #e74c3c; font-weight: bold; }
+        .status-healthy { color: #27ae60; font-weight: bold; }
+
+        .player-id { position: absolute; top: 10px; left: 15px; font-size: 12px; opacity: 0.7; }
     </style>
 </head>
 <body>
-    <h2>{{ player.full_name }}</h2>
-    <table>
-        <tr><th>소속팀</th><td>{{ player.team_name }}</td></tr>
-        <tr><th>포지션</th><td>{{ player.position_name }}</td></tr>
-        <tr><th>나이</th><td>{{ player.age }}세</td></tr>
-        <tr><th>투/타</th><td>{{ '우투' if player.throws == 1 else '좌투' }}/{{ '우타' if player.bats == 1 else '좌타' if player.bats == 2 else '양타' }}</td></tr>
-        <tr><th>등번호</th><td>{{ player.uniform_number }}</td></tr>
-        <tr><td colspan="2" style="background-color:#eee; text-align:center;"><b>선수 성향</b></td></tr>
-        <tr><th>성실도</th><td>{{ player.personality_work_ethic }}</td></tr>
-        <tr><th>지능</th><td>{{ player.personality_intelligence }}</td></tr>
-        <tr><th>리더십</th><td>{{ player.personality_leader }}</td></tr>
-        <tr><th>충성심</th><td>{{ player.personality_loyalty }}</td></tr>
-        <tr><th>우승열망</th><td>{{ player.personality_play_for_winner }}</td></tr>
-        <tr><th>욕심</th><td>{{ player.personality_greed }}</td></tr>
-        <tr><td colspan="2" style="background-color:#eee; text-align:center;"><b>상태</b></td></tr>
-        <tr><th>부상</th>
-            <td>
-                {% if player.injury_is_injured == 1 %}
-                    <span style="color: red;">부상중 ({{ player.injury_left }}일 남음)</span>
-                {% else %}
-                    <span style="color: green;">건강</span>
-                {% endif %}
-            </td>
-        </tr>
-        <tr><th>부상 가능성</th><td>{{ player.prone_overall }}</td></tr>
-        <tr><th>경기감각 저하</th><td>{{ player.rust }}</td></tr>
-        <tr><th>종합 사기</th><td>{{ player.morale }}</td></tr>
-        <tr><th>역할 만족도</th><td>{{ player.morale_player_role }}</td></tr>
-        <tr><th>기대치</th><td>{{ player.expectation }}</td></tr>
-    </table>
+
+    <div class="card">
+        <div class="card-header">
+            <span class="player-id">ID: {{ player.player_id }}</span>
+            <h1>{{ player.full_name }}</h1>
+            <p>{{ player.team_name }} | {{ player.position_name }} | {{ player.age }}세</p>
+        </div>
+        
+        <div class="card-body">
+            <div class="section-title">기본 정보</div>
+            <table>
+                <tr><th>투/타</th><td>{{ '우투' if player.throws == 1 else '좌투' }}/{{ '우타' if player.bats == 1 else '좌타' if player.bats == 2 else '양타' }}</td></tr>
+                <tr><th>등번호</th><td>{{ player.uniform_number }}</td></tr>
+            </table>
+
+            <div class="section-title">성격 및 멘탈</div>
+            <table>
+                <tr><th>성실도 / 지능</th><td>{{ player.personality_work_ethic }} / {{ player.personality_intelligence }}</td></tr>
+                <tr><th>리더십</th><td>{{ player.personality_leader }}</td></tr>
+                <tr><th>충성심 / 우승열망</th><td>{{ player.personality_loyalty }} / {{ player.personality_play_for_winner }}</td></tr>
+                <tr><th>욕심</th><td>{{ player.personality_greed }}</td></tr>
+            </table>
+
+            <div class="section-title">현재 상태</div>
+            <table>
+                <tr><th>부상 상태</th>
+                    <td>
+                        {% if player.injury_is_injured == 1 %}
+                            <span class="status-injured">🚑 부상중 ({{ player.injury_left }}일 남음)</span>
+                        {% else %}
+                            <span class="status-healthy">✅ 건강함</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr><th>부상 가능성</th><td>{{ player.prone_overall }}</td></tr>
+                <tr><th>경기감각 / 사기</th><td>{{ player.rust }} / {{ player.morale }}</td></tr>
+                <tr><th>기대치</th><td>{{ player.expectation }}</td></tr>
+            </table>
+
+            <!-- [추가] 최근 3년 성적 섹션 -->
+            <div class="section-title">최근 3년 성적</div>
+            <table>
+                <thead>
+                    <tr style="background-color: #eee;">
+                        <th>연도</th>
+                        <th>소속팀 (레벨)</th>
+                        <th>경기수</th>
+                        {% if player.position|int == 1 %} <!-- 투수일 때 -->
+                            <th>이닝</th> <th>승</th> <th>패</th> <th>세이브</th> <th>방어율</th>
+                        {% else %} <!-- 타자일 때 -->
+                            <th>타수</th> <th>안타</th> <th>홈런</th> <th>타점</th> <th>타율</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if stats %}
+                        {% for stat in stats %}
+                        <tr>
+                            <td>{{ stat.year }}</td>
+                            <td>
+                                {% if stat.level_id == 1 or stat.level_id == 8 %}
+                                    <span style="color: #2980b9; font-weight: bold;">{{ stat.team_name }}</span>
+                                {% elif stat.level_id == 6 %}
+                                    <span style="color: #555;">{{ stat.team_name }} (2군)</span>
+                                {% else %}
+                                    <span style="color: #333;">{{ stat.team_name }} (Lv.{{ stat.level_id }})</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ stat.g }}</td>
+                            {% if player.position|int == 1 %}
+                                <td>
+                                    <!-- 이닝 표시 로직: 소수점을 분수로 변환 -->
+                                    {% set ip_str = stat.ip|string %}
+                                    {% if ip_str.endswith('.1') %}
+                                        {{ ip_str[:-2] }} ⅓
+                                    {% elif ip_str.endswith('.2') %}
+                                        {{ ip_str[:-2] }} ⅔
+                                    {% else %}
+                                        {{ stat.ip }}
+                                    {% endif %}
+                                </td> 
+                                <td>{{ stat.w }}</td> <td>{{ stat.l }}</td> <td>{{ stat.s }}</td> <td>{{ stat.era }}</td>
+                            {% else %}
+                                <td>{{ stat.ab }}</td> <td>{{ stat.h }}</td> <td>{{ stat.hr }}</td> <td>{{ stat.rbi }}</td> <td>{{ stat.avg }}</td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr><td colspan="8" style="text-align:center; color: #999;">최근 기록이 없거나 조회할 수 없습니다.</td></tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
 </body>
 </html>

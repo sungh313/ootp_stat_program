@@ -7,33 +7,105 @@
     <title>OOTP 선수단 조회</title>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
     <style>
-        body { font-family: 'Malgun Gothic', sans-serif; padding: 20px; width: 1800px; margin: auto; }
+        body { font-family: 'Malgun Gothic', sans-serif; padding: 20px; width: 95%; max-width: 1800px; margin: auto; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .team-performance { border: 1px solid #ccc; padding: 10px; border-radius: 5px; }
         .search-area { text-align: center; }
         th, td { border: 1px solid #ccc; padding: 4px; text-align: center; font-size: 12px; white-space: nowrap; }
+        
+        /* 테이블 헤더 스타일 개선 */
+        table.dataTable thead th {
+            background-color: #2c3e50;
+            color: white;
+            font-weight: 600;
+            border-bottom: 2px solid #1a252f;
+            padding: 8px 4px; /* 헤더 여백 조정 */
+        }
+        
         table.dataTable thead .sorting, table.dataTable thead .sorting_asc, table.dataTable thead .sorting_desc { cursor: pointer; }
+        
+        /* 섹션 구분선 (왼쪽 테두리 강조) */
+        .border-left-thick { border-left: 2px solid #95a5a6 !important; }
+        
         .table-container { margin-bottom: 40px; } /* 테이블 간 간격 추가 */
+
+        /* --- 버튼 스타일 추가 --- */
+        .btn-group { 
+            display: grid; 
+            grid-template-columns: 150px 150px; /* 2열, 고정 너비 */
+            gap: 10px; 
+            justify-content: end; /* 오른쪽 정렬 */
+        }
+        .custom-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+            text-decoration: none;
+            color: white;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            width: 100%; /* 버튼 너비를 그리드 셀에 맞춤 */
+            box-sizing: border-box;
+        }
+        .custom-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
+        .btn-fa { background-color: #3498db; }       /* 파란색 (FA) */
+        .btn-trade { background-color: #e67e22; }    /* 주황색 (트레이드) */
+        .btn-draft { background-color: #2ecc71; }    /* 초록색 (드래프트) */
+        .btn-compare { background-color: #9b59b6; }  /* 보라색 (비교) */
+
+        /* 선수 이름 링크 스타일 */
+        .player-link { text-decoration: none; color: #2980b9; font-weight: bold; }
+        .player-link:hover { text-decoration: underline; color: #1c5980; }
+
+        /* 검색창 스타일 */
+        .search-form { display: flex; align-items: center; gap: 8px; }
+        .search-input {
+            padding: 12px 20px;
+            font-size: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 30px;
+            width: 300px;
+            outline: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .search-input:focus { border-color: #3498db; box-shadow: 0 4px 8px rgba(52, 152, 219, 0.2); }
+        .search-btn {
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            background-color: #2c3e50;
+            color: white; border: none; border-radius: 30px;
+            cursor: pointer; transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .search-btn:hover { background-color: #34495e; transform: translateY(-1px); box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="team-performance">
-            <strong>성적</strong><br>
-            이번 시즌 : 00승 0패 0무<br>
-            이번달 : 00승 0패 0무
+        <!-- 왼쪽 여백 (버튼 그룹과의 균형을 위해 추가) -->
+        <div style="flex: 1;">
+            <span style="font-size: 12px; color: #666;">{{ base_date }}</span>
         </div>
+
         <div class="search-area">
-            <strong>선수 조회하기</strong>
-            <form id="searchForm" action="/search" method="get" target="_blank" style="display: inline;">
-                <input type="text" name="name" id="playerSearchInput" placeholder="선수이름 입력창" size="30">
-                <button type="submit">검색</button>
+            <form id="searchForm" action="/search" method="get" target="_blank" class="search-form">
+                <input type="text" name="name" id="playerSearchInput" class="search-input" placeholder="선수 이름 검색..." autocomplete="off">
+                <button type="submit" class="search-btn">🔍 검색</button>
             </form>
         </div>
-        <div class="button-group">
-            <a href="/fa_players" class="btn btn-primary">FA 선수 조회</a> <button onclick="location.href='/trading_block'">트레이딩 블록 확인</button>
-            <button>신인 드래프트 대상</button>
+        <div class="btn-group" style="flex: 1;">
+            <a href="/fa_players" class="custom-btn btn-fa">💰 FA 선수</a>
+            <a href="/compare" class="custom-btn btn-compare">🆚 선수 비교</a>
+            <a href="/trade_block" class="custom-btn btn-trade">🔄 트레이딩블록</a>
+            <a href="/draft_eligible" class="custom-btn btn-draft">🎓 신인드래프트</a>
         </div>
     </div>
 
@@ -43,33 +115,33 @@
         <table id="hanwha_players_table" class="display" style="width:100%">
             <thead>
                 <tr>
-                    <th>순번</th> <th>이름</th> <th>포지션</th> <th>팀</th> <th>나이</th> <th>투/타</th>
-                    <th>성실도</th> <th>지능</th> <th>성실+지능</th>
+                    <th>등번호</th> <th>이름</th> <th>포지션</th> <th>팀</th> <th>나이</th> <th>투/타</th>
+                    <th class="border-left-thick">성실도</th> <th>지능</th> <th>성실+지능</th>
                     <th>리더십</th> <th>충성심</th> <th>우승열망</th> <th>욕심</th>
-                    <th>부상여부</th> <th>부상 가능성</th> <th>경기감각 저하</th> <th>종합 사기</th> <th>역할 만족도</th> <th>기대치</th>
+                    <th class="border-left-thick">부상여부</th> <th>부상 가능성</th> <th>경기감각 저하</th> <th>종합 사기</th> <th>역할 만족도</th> <th>기대치</th>
                 </tr>
             </thead>
             <tbody>
                 {% for player in hanwha_players %}
                 <tr>
-                    <td>{{ loop.index }}</td>
-                    <td>{{ player.name }}</td>
+                    <td>{{ player.uniform_number }}</td>
+                    <td><a href="/player/id/{{ player.player_id }}" class="player-link" target="_blank">{{ player.name }}</a></td>
                     <td>{{ player.position_name }}</td>
                     <td>{{ player.team_name }}</td>
                     <td>{{ player.age }}세</td>
                     <td>{{ player.throws }}/{{ player.bat }}</td>
-                    <td>{{ player.personality_work_ethic }}</td>
+                    <td class="border-left-thick">{{ player.personality_work_ethic }}</td>
                     <td>{{ player.personality_intelligence }}</td>
-                    <td>{{ player.work_intel_sum }}</td>
+                    <td style="font-weight: bold; background-color: #f0f8ff;">{{ player.work_intel_sum }}</td>
                     <td>{{ player.personality_leader }}</td>
                     <td>{{ player.personality_loyalty }}</td>
                     <td>{{ player.personality_play_for_winner }}</td>
                     <td>{{ player.personality_greed }}</td>
-                    <td>
+                    <td class="border-left-thick" data-order="{{ 1 if player.injury_is_injured == 1 else 0 }}">
                         {% if player.injury_is_injured == 1 %}
-                            <span style="color: red; display:none;">1</span>부상중 ({{ player.injury_left }}일)
+                            <span style="color: red;">부상중 ({{ player.injury_left }}일)</span>
                         {% else %}
-                            <span style="color: green; display:none;">0</span>건강
+                            <span style="color: green;">건강</span>
                         {% endif %}
                     </td>
                     <td style="{% if player.prone_overall > 90 %}color: red;{% elif player.prone_overall > 75 %}color: orange;{% endif %}">{{ player.prone_overall }}</td>
@@ -89,33 +161,33 @@
         <table id="seosan_players_table" class="display" style="width:100%">
             <thead>
                 <tr>
-                    <th>순번</th> <th>이름</th> <th>포지션</th> <th>팀</th> <th>나이</th> <th>투/타</th>
-                    <th>성실도</th> <th>지능</th> <th>성실+지능</th>
+                    <th>등번호</th> <th>이름</th> <th>포지션</th> <th>팀</th> <th>나이</th> <th>투/타</th>
+                    <th class="border-left-thick">성실도</th> <th>지능</th> <th>성실+지능</th>
                     <th>리더십</th> <th>충성심</th> <th>우승열망</th> <th>욕심</th>
-                    <th>부상여부</th> <th>부상 가능성</th> <th>경기감각 저하</th> <th>종합 사기</th> <th>역할 만족도</th> <th>기대치</th>
+                    <th class="border-left-thick">부상여부</th> <th>부상 가능성</th> <th>경기감각 저하</th> <th>종합 사기</th> <th>역할 만족도</th> <th>기대치</th>
                 </tr>
             </thead>
             <tbody>
                 {% for player in seosan_players %}
                 <tr>
-                    <td>{{ loop.index }}</td>
-                    <td>{{ player.name }}</td>
+                    <td>{{ player.uniform_number }}</td>
+                    <td><a href="/player/id/{{ player.player_id }}" class="player-link" target="_blank">{{ player.name }}</a></td>
                     <td>{{ player.position_name }}</td>
                     <td>{{ player.team_name }}</td>
                     <td>{{ player.age }}세</td>
                     <td>{{ player.throws }}/{{ player.bat }}</td>
-                    <td>{{ player.personality_work_ethic }}</td>
+                    <td class="border-left-thick">{{ player.personality_work_ethic }}</td>
                     <td>{{ player.personality_intelligence }}</td>
-                    <td>{{ player.work_intel_sum }}</td>
+                    <td style="font-weight: bold; background-color: #f0f8ff;">{{ player.work_intel_sum }}</td>
                     <td>{{ player.personality_leader }}</td>
                     <td>{{ player.personality_loyalty }}</td>
                     <td>{{ player.personality_play_for_winner }}</td>
                     <td>{{ player.personality_greed }}</td>
-                    <td>
+                    <td class="border-left-thick" data-order="{{ 1 if player.injury_is_injured == 1 else 0 }}">
                         {% if player.injury_is_injured == 1 %}
-                            <span style="color: red; display:none;">1</span>부상중 ({{ player.injury_left }}일)
+                            <span style="color: red;">부상중 ({{ player.injury_left }}일)</span>
                         {% else %}
-                            <span style="color: green; display:none;">0</span>건강
+                            <span style="color: green;">건강</span>
                         {% endif %}
                     </td>
                     <td style="{% if player.prone_overall > 90 %}color: red;{% elif player.prone_overall > 75 %}color: orange;{% endif %}">{{ player.prone_overall }}</td>
@@ -139,9 +211,9 @@
             "scrollY": "400px",
             "scrollCollapse": true,
             "paging": false,
-            "info": false,
+            "info": false,  
             "searching": false, 
-            "order": [[2, "asc"]] // 포지션 순으로 정렬
+            "order": [[8, "desc"]] // 성실+지능 합계 높은 순 정렬
         });
 
         $('#seosan_players_table').DataTable({
@@ -150,7 +222,7 @@
             "paging": false,
             "info": false,
             "searching": false,
-            "order": [[2, "asc"]] // 포지션 순으로 정렬
+            "order": [[8, "desc"]] // 성실+지능 합계 높은 순 정렬
         });
 
         // ... (기존 검색 관련 스크립트는 동일) ...

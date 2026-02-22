@@ -37,7 +37,7 @@ def start_analysis_server():
         time.sleep(2)
         
         # 웹 브라우저로 분석 화면 열기
-        webbrowser.open_new_tab('http://127.0.0.1:5001')
+        webbrowser.open_new_tab('http://127.0.0.1:5003')
         
     except FileNotFoundError:
         st.error("player_info_app.py 파일을 찾을 수 없습니다. app.py와 같은 폴더에 있는지 확인해주세요.")
@@ -71,26 +71,3 @@ if st.button("💾 새로운 데이터 저장하기", use_container_width=True, 
         st.error("uploader_gui.py 파일을 찾을 수 없습니다. app.py와 같은 폴더에 있는지 확인해주세요.")
     except Exception as e:
         st.error(f"업로더를 실행하는 중 오류가 발생했습니다: {e}")
-
-
-@app.route('/fa_players')
-def fa_players():
-    conn = sqlite3.connect('ootp_data.db')
-    cur = conn.cursor()
-    
-    # OOTP 테이블 구조에 따라 team_id가 0인 선수를 FA로 간주
-    # 필요한 컬럼(성실도, 지능, 리더십 등)을 기존 쿼리와 동일하게 작성
-    query = """
-    SELECT player_id, first_name, last_name, position, age, 
-           personality_work_ethic, personality_intelligence, 
-           personality_leadership, personality_loyalty
-    FROM players
-    WHERE team_id = 0 AND retired = 0
-    ORDER BY personality_work_ethic DESC
-    """
-    
-    cur.execute(query)
-    fa_list = cur.fetchall()
-    conn.close()
-    
-    return render_template('fa_list.html', players=fa_list)
