@@ -50,6 +50,7 @@ def get_trade_block_players():
             WHERE b.trade_status != 0
               AND a.player_id = b.player_id
               AND a.team_id = c.team_id
+              AND c.league_id in '221', '222'
             ORDER BY c.name, a.position;
             """
             cursor.execute(sql)

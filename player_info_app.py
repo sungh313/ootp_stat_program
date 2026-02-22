@@ -73,7 +73,11 @@ def get_trade_block_players():
                 a.personality_work_ethic, a.personality_intelligence, a.personality_leader, a.personality_loyalty, a.personality_play_for_winner, a.personality_greed,
                 a.injury_is_injured, a.injury_left, a.prone_overall, a.rust, a.morale, a.morale_player_role, a.expectation
             FROM players a, players_roster_status b, teams c
-            WHERE b.trade_status != 0 AND a.player_id = b.player_id AND a.team_id = c.team_id
+            WHERE b.trade_status != 0 
+              AND a.player_id = b.player_id 
+              AND a.team_id = c.team_id
+              and c.league_id in ('221', '222')
+              and a.nation_id = '177'
             ORDER BY c.name, a.position;
             """
             cursor.execute(sql)
@@ -104,6 +108,7 @@ def get_draft_eligible_players():
                 a.injury_is_injured, a.injury_left, a.prone_overall, a.rust, a.morale, a.morale_player_role, a.expectation
             FROM players a
             WHERE a.draft_eligible = 1
+              AND a.nation_id = '177' 
             ORDER BY a.team_id, a.position;
             """
             cursor.execute(sql)
@@ -121,7 +126,7 @@ def show_players():
 
     try:
         with connection.cursor() as cursor:
-            # 한화 선수단 조회 (team_id = 2 가정)
+            # 한화 선수단 조회 (team_id = 140 가정)
             sql_hanwha = """
             SELECT 
                 a.player_id, b.name AS team_name,
@@ -135,13 +140,13 @@ def show_players():
                 a.personality_leader, a.personality_loyalty, a.personality_play_for_winner, a.personality_greed,
                 a.injury_is_injured, a.injury_left, a.prone_overall, a.rust, a.morale, a.morale_player_role, a.expectation
             FROM players a JOIN teams b ON a.team_id = b.team_id
-            WHERE a.team_id = 2 
+            WHERE a.team_id = 140 
             ORDER BY a.position;
             """
             cursor.execute(sql_hanwha)
             hanwha_players = cursor.fetchall()
 
-            # 서산 선수단 조회 (team_id = 16 가정)
+            # 서산 선수단 조회 (team_id = 154 가정)
             sql_seosan = """
             SELECT 
                 a.player_id, b.name AS team_name,
@@ -155,7 +160,7 @@ def show_players():
                 a.personality_leader, a.personality_loyalty, a.personality_play_for_winner, a.personality_greed,
                 a.injury_is_injured, a.injury_left, a.prone_overall, a.rust, a.morale, a.morale_player_role, a.expectation
             FROM players a JOIN teams b ON a.team_id = b.team_id
-            WHERE a.team_id = 16
+            WHERE a.team_id = 154
             ORDER BY a.position;
             """
             cursor.execute(sql_seosan)
